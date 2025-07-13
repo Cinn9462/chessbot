@@ -747,8 +747,12 @@ public class ChessBoard {
         }
     }
 
+    /**
+     * 
+     * @param lastMove Last move played on the board
+     * @return State of game. -1 is checkmate, 0 is stalemate, 1 is ongoing.
+     */
     public int gameState(int lastMove) {
-        // -1 = checkmate, 0 = stalemate, 1 = continue;
         int from = lastMove >>> 26;
         int to = (lastMove << 6) >>> 26;
         int piece = (lastMove << 12) >>> 29;

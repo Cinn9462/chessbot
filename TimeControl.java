@@ -43,7 +43,7 @@ public class TimeControl {
     }
 
     /**
-     * @return Returns time left on player clock in miliseconds
+     * @return Time left on player clock in miliseconds
      */
     public long getTime() {
         return time;
