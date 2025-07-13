@@ -110,9 +110,5 @@ public class MyStockfish extends ChessPlayer{
 
         return (getSide() ? eval : -eval) + (moves.length - 1);
     }
-
-    private int moveOrdering(int move) {
-
-    }
 }
 
