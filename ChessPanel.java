@@ -78,7 +78,7 @@ public class ChessPanel extends JPanel{
     }
 
     public void drawPieces(ChessBoard b, Graphics g) throws IOException {
-        BufferedImage image = ImageIO.read(new File("C:\\Users\\Lixin\\IdeaProjects\\mystockfish\\src\\chess PIECES2.png"));
+        BufferedImage image = ImageIO.read(new File("chess PIECES2.png"));
         long[] pieces = b.getBoard();
 
         int[][][] allPositions = new int[12][][];
