@@ -26,7 +26,7 @@ public class TimeControl {
     }
 
     /**
-     * @param time_spent Time spent my player (in miliseconds)
+     * @param time_spent Time spent by player (in miliseconds)
      * @return If player has ran out of time, return false. Otherwise return true. 
      */
     public boolean updateClock(long time_spent) {

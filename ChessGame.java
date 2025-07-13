@@ -6,79 +6,82 @@ public class ChessGame {
     private TimeControl black_time;
 
     private int turn = 0; // even is white, odd is black
-    private int last_move = 100;
+    private int last_move = 100; // 100 is null move
 
-    private int result = 0;
+    private int game_status = 0; // -1 is win/los, 0 is stalemate, 1 is ongoing
     private int winner = 0;
     
-    private ChessBoard board;
+    private ChessBoard board = new ChessBoard();
 
-    public ChessGame(ChessPlayer w, ChessPlayer b) {
-        white = w;
-        black = b;
-        white_time = black_time = new TimeControl();
-        turn = 0;
-        result = 0;
-        winner = 0;
-        last_move = 100;
-        board = new ChessBoard();
+    /**
+     * Create a game with unlimited time.
+     */
+    public ChessGame(ChessPlayer white, ChessPlayer black) {
+        this.white = white;
+        this.black = black;
+        white_time = new TimeControl();
+        black_time = new TimeControl();
     }
 
-    public ChessGame(ChessPlayer w, ChessPlayer b, TimeControl tc) {
-        white = w;
-        black = b;
-        white_time = black_time = tc;
-        turn = 0;
-        result = 0;
-        winner = 0;
-        last_move = 100;
-        board = new ChessBoard();
+    /**
+     * Create a game with both sides given equal time. Time controls are in seconds.
+     */
+    public ChessGame(ChessPlayer white, ChessPlayer black, long time, long delay, long increment) {
+        this.white = white;
+        this.black = black;
+        white_time = new TimeControl(time, delay, increment);
+        black_time = new TimeControl(time, delay, increment);
     }
-
-    public ChessGame(ChessPlayer w, ChessPlayer b, TimeControl tca, TimeControl tcb) {
-        white = w;
-        black = b;
-        white_time = tca;
-        black_time = tcb;
-        turn = 0;
-        result = 0;
-        winner = 0;
-        last_move = 100;
-        board = new ChessBoard();
+    
+    /**
+     * Create a game with both sides given unequal time. Time controls are in seconds.
+     */
+    public ChessGame(ChessPlayer white, ChessPlayer black, long white_time, long white_delay, long white_increment, long black_time, long black_delay, long black_increment) {
+        this.white = white;
+        this.black = black;
+        this.white_time = new TimeControl(white_time, white_delay, white_increment);
+        this.black_time = new TimeControl(black_time, black_delay, black_increment);
     }
 
     public int move() {
+        boolean white_turn = (turn % 2 == 0);
+
         int move;
+        long startTime = System.currentTimeMillis();
 
         if (turn == 0) {
-            white_time.start();
             move = white.findMove(board);
-            white_time.end();
-        }
-        else if (turn % 2 == 0) {
-            white_time.start();
+        } else if (white_turn) {
             move = white.findMove(board, last_move);
-            white_time.end();
         } else {
-            black_time.start();
             move = black.findMove(board, last_move);
-            black_time.end();
+        }
+        
+        long endTime = System.currentTimeMillis();
+        
+        if (white_turn && white_time.updateClock(endTime - startTime)) {
+            winner = -1; // Black wins, white is out of time
+            return -1; // Game over
+        } else if (black_time.updateClock(endTime - startTime)) {
+            winner = 1; // White wins, black is out of time
+            return -1; // Game over
         }
 
         board.move(move);
         turn++;
         last_move = move;
 
-        result = board.gameState(move);
-        winner = result * ((turn % 2 == 0) ? 1 : -1);
-        return result;
+        game_status = board.gameState(move); // checks if last move made resulted in checkmate
+        winner = game_status * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, 
+
+        return game_status;
     }
 
     public ChessBoard getBoard() {
         return board;
     }
 
-    public int getResult() {
+    public int getWinner() {
         return winner;
     }
 }
