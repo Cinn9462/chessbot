@@ -24,8 +24,10 @@ public class ChessObserver {
 
         if (watchable) {
             ChessFrame frame = new ChessFrame();
-            ChessPanel screen = new ChessPanel(game.getBoard(), white_perspective);
+            ChessPanel screen = new ChessPanel(game.getBoard(), white_perspective, game.getWhiteTimeControl(), game.getBlackTimeControl());
             frame.add(screen);
+
+            screen.revalidate();
 
             while (game_status > 0) {
                 game_status = game.move();

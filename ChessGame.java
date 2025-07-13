@@ -90,4 +90,12 @@ public class ChessGame {
     public int getWinner() {
         return winner;
     }
+
+    public TimeControl getBlackTimeControl() {
+        return black_time;
+    }
+    
+    public TimeControl getWhiteTimeControl() {
+        return white_time;
+    }
 }

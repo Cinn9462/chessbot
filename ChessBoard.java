@@ -2686,7 +2686,7 @@ public class ChessBoard {
      */
     public void showBoard(boolean white) {
         ChessFrame f = new ChessFrame();
-        ChessPanel p = new ChessPanel(this, white);
+        ChessPanel p = new ChessPanel(this, white, new TimeControl(), new TimeControl());
         f.add(p);
     }
 }
