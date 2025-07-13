@@ -43,6 +43,9 @@ public class ChessGame {
         this.black_time = new TimeControl(black_time, black_delay, black_increment);
     }
 
+    /**
+     * @return Status of game. -1 is win/loss, 0 is stalemate, 1 is ongoing
+     */
     public int move() {
         boolean white_turn = (turn % 2 == 0);
 
@@ -59,10 +62,10 @@ public class ChessGame {
         
         long endTime = System.currentTimeMillis();
         
-        if (white_turn && white_time.updateClock(endTime - startTime)) {
+        if (white_turn && !white_time.updateClock(endTime - startTime)) {
             winner = -1; // Black wins, white is out of time
             return -1; // Game over
-        } else if (black_time.updateClock(endTime - startTime)) {
+        } else if (!black_time.updateClock(endTime - startTime)) {
             winner = 1; // White wins, black is out of time
             return -1; // Game over
         }
@@ -72,7 +75,7 @@ public class ChessGame {
         last_move = move;
 
         game_status = board.gameState(move); // checks if last move made resulted in checkmate
-        winner = game_status * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, 
+        winner = game_status * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
 
         return game_status;
     }
@@ -81,6 +84,9 @@ public class ChessGame {
         return board;
     }
 
+    /**
+     * @return -1 is black win, 0 is stalemate, 1 is white win
+     */
     public int getWinner() {
         return winner;
     }

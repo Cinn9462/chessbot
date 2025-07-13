@@ -1,50 +1,54 @@
 public class ChessObserver {
     private ChessGame game;
     private boolean watchable;
-    private long wait;
-    private boolean rightSideUp;
+    private boolean white_perspective; // Determines which side is on the bottom. true means white pieces are on the bottom, false means black pieces are on the bottom.
 
-    public ChessObserver(ChessGame g, boolean w, long ww) {
-        game = g;
-        watchable = w;
-        wait = ww;
+    /**
+     * @param game Game board
+     * @param watchable Controls whether a screen pops up
+     * @param perspective Controls which side's pieces are on the bottom (true is white, false is black)
+     */
+    public ChessObserver(ChessGame game, boolean watchable, boolean perspective) {
+        this.game = game;
+        this.watchable = watchable;
+        this.white_perspective = perspective;
     }
 
-    public ChessObserver(ChessGame g, boolean w, long ww, boolean o) {
-        game = g;
-        watchable = w;
-        wait = ww;
-        rightSideUp = o;
-    }
+    /**
+     * Prints result of game
+     * @throws InterruptedException
+     */
+    public void play() throws InterruptedException {
+        
+        int game_status = 1; // -1 is win/loss, 0 is stalemate, 1 is ongoing
 
-    public int play() {
-        int gameOver = 1;
         if (watchable) {
             ChessFrame frame = new ChessFrame();
-            ChessPanel screen = new ChessPanel(new ChessBoard(), rightSideUp);
+            ChessPanel screen = new ChessPanel(game.getBoard(), white_perspective);
             frame.add(screen);
-            while (gameOver > 0) {
-                gameOver = game.move();
-                ChessBoard b = game.getBoard();
-                screen.updateBoard(b);
+
+            while (game_status > 0) {
+                game_status = game.move();
                 screen.repaint();
-                try {
-                    Thread.sleep(wait);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                
+                Thread.sleep(200); // Wait 200ms between each move
             }
         }
+
         else {
-            while (gameOver > 0) {
-                gameOver = game.move();
-                try {
-                    Thread.sleep(wait);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+            while (game_status > 0) {
+                game_status = game.move();
+
+                Thread.sleep(200); // Wait 200ms between each move
             }
         }
-        return game.getResult();
+        
+        if (game.getWinner() == -1) {
+            System.out.println("Black won");
+        } else if (game.getWinner() == 1) {
+            System.out.println("White won");
+        } else {
+            System.out.println("Stalemate");
+        }
     }
 }

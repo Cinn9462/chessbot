@@ -78,7 +78,7 @@ public class ChessPanel extends JPanel{
     }
 
     public void drawPieces(ChessBoard b, Graphics g) throws IOException {
-        BufferedImage image = ImageIO.read(new File("/pieces.png"));
+        BufferedImage image = ImageIO.read(new File("pieces.png"));
         long[] pieces = b.getBoard();
 
         int[][][] allPositions = new int[12][][];
@@ -141,11 +141,7 @@ public class ChessPanel extends JPanel{
             g.drawImage(smallImage, (white ? i[0] : 7 - i[0]) * (int) (100 * scale), (white ? i[1] : 7 - i[1]) * (int) (100 * scale), (int) (100 * scale), (int) (100 * scale),null);
         }
     }
-
-    public void updateBoard(ChessBoard b) {
-        board = b;
-    }
-
+    
     private int[][] longToPosition(long loc) {
         int bits = Long.bitCount(loc);
         int[][] positions = new int[bits][2];
