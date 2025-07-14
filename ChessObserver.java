@@ -6,7 +6,10 @@ public class ChessObserver {
     private boolean white_perspective; // Determines which side is on the bottom. true means white pieces are on the bottom, false means black pieces are on the bottom.
 
     private ChessPanel screen;
-    private Timer screenTimer = new Timer(1000, e -> screen.repaint());
+    private Timer screenTimer = new Timer(500, e -> screen.repaint());
+
+    private int gameStatus = 1; // -1 is win/loss, 0 is stalemate, 1 is ongoing
+    private boolean nextMove = true;
 
     /**
      * @param game Game board
@@ -25,30 +28,20 @@ public class ChessObserver {
      * @throws InterruptedException
      */
     public void play() throws InterruptedException {
-        
-        int game_status = 1; // -1 is win/loss, 0 is stalemate, 1 is ongoing
-
         if (watchable) {
             ChessFrame frame = new ChessFrame();
             frame.add(screen);
 
             screen.revalidate();
             screenTimer.start();
-
-            while (game_status > 0) {
-                screen.repaint();
-                game_status = game.move();
-        
-                Thread.sleep(200); // Wait 200ms between each move
-            }
         }
 
-        else {
-            while (game_status > 0) {
-                game_status = game.move();
-
-                Thread.sleep(200); // Wait 200ms between each move
+        while (gameStatus > 0) {
+            if (nextMove) {
+                nextMove = false;
+                game.move(this);
             }
+            Thread.sleep(100); // Wait 100ms between each move
         }
         
         if (game.getWinner() == -1) {
@@ -58,5 +51,13 @@ public class ChessObserver {
         } else {
             System.out.println("Stalemate");
         }
+    }
+
+    public void setGameStatus(int status) {
+        this.gameStatus = status;
+    }
+
+    public void nextMove() {
+        nextMove = true;
     }
 }

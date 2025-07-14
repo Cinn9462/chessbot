@@ -1,3 +1,6 @@
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+
 public class ChessGame {
     private ChessPlayer white;
     private ChessPlayer black;
@@ -5,13 +8,16 @@ public class ChessGame {
     private TimeControl white_time;
     private TimeControl black_time;
 
+    private int last_move = 100;
+
     private int turn = 0; // even is white, odd is black
-    private int last_move = 100; // 100 is null move
 
     private int game_status = 0; // -1 is win/los, 0 is stalemate, 1 is ongoing
     private int winner = 0;
     
     private ChessBoard board = new ChessBoard();
+
+    private Timer timer;
 
     /**
      * Create a game with unlimited time.
@@ -66,42 +72,43 @@ public class ChessGame {
     /**
      * @return Status of game. -1 is win/loss, 0 is stalemate, 1 is ongoing
      */
-    public int move() {
+    public void move(ChessObserver obs) {
         boolean white_turn = getTurn();
+        TimeControl currentTimeControl = (white_turn) ? white_time: black_time;
 
-        int move;
-        long startTime = System.currentTimeMillis();
+        timer =  new Timer(50, e -> {
+            currentTimeControl.updateClock(50);
+        });
 
-        if (turn == 0) {
-            move = white.findMove(board);
-        } else if (white_turn) {
-            move = white.findMove(board, last_move);
-        } else {
-            move = black.findMove(board, last_move);
-        }
-        
-        long endTime = System.currentTimeMillis();
+        timer.start();
 
-        if (white_turn) {
-            if (!white_time.updateClock(endTime - startTime)) {
-                winner = -1; // Black wins, white is out of time
-                return -1; // Game over
+        new Thread(() -> {
+            int move;
+            if (turn == 0) {
+                move = white.findMove(board);
+            } else {
+                move = (white_turn) ? white.findMove(board, last_move) : black.findMove(board, last_move);
             }
-        } else {
-            if (!black_time.updateClock(endTime - startTime)) {
-            winner = 1; // White wins, black is out of time
-            return -1; // Game over
-           }
-        }
 
-        board.move(move);
-        turn++;
-        last_move = move;
+            SwingUtilities.invokeLater(() -> {
+                timer.stop();
+                board.move(move);
+                turn++;
+                last_move = move;
 
-        game_status = board.gameState(move); // checks if last move made resulted in checkmate
-        winner = game_status * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
+                game_status = board.gameState(move); // checks if last move made resulted in checkmate
+                winner = game_status * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
+                
+                if (currentTimeControl.getTime() == 0) {
+                    game_status = -1;
+                    winner = white_turn ? -1 : 1;
+                }
 
-        return game_status;
+                obs.setGameStatus(game_status);
+
+                obs.nextMove();
+            });
+        }).start();
     }
 
     public ChessBoard getBoard() {
