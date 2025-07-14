@@ -1,8 +1,88 @@
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.PriorityQueue;
 
 public class MyStockfish extends ChessPlayer{
+    private static int safetyValues[] = {
+            1, 2, 3, 4, 5, 6, 8, 9, 10, 12,
+            14, 16, 18, 20, 23, 26, 29, 33, 36, 40,
+            45, 50, 55, 60, 66, 72, 79, 86, 94, 102,
+            111, 120, 130, 140, 151, 162, 175, 187, 201, 214,
+            229, 244, 260, 277, 295, 313, 332, 352, 372, 395,
+            415, 435, 452, 465, 475, 483, 488, 492, 495, 497,
+            498, 499, 499, 500, 500, 500, 500, 500, 500, 500,
+            500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
+            500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
+            500, 500, 500, 500, 500, 500, 500, 500, 500, 500,
+    }; // Modeled after my desmos graph
+
+    private static int[][] whiteKingZones = new int[][] {
+            new int[]{16, 17, 24, 25, 32, 33, },
+            new int[]{16, 17, 18, 24, 25, 26, 32, 33, 34, },
+            new int[]{17, 18, 19, 25, 26, 27, 33, 34, 35, },
+            new int[]{18, 19, 20, 26, 27, 28, 34, 35, 36, },
+            new int[]{19, 20, 21, 27, 28, 29, 35, 36, 37, },
+            new int[]{20, 21, 22, 28, 29, 30, 36, 37, 38, },
+            new int[]{21, 22, 23, 29, 30, 31, 37, 38, 39, },
+            new int[]{22, 23, 30, 31, 38, 39, },
+            new int[]{24, 25, 32, 33, 40, 41, },
+            new int[]{24, 25, 26, 32, 33, 34, 40, 41, 42, },
+            new int[]{25, 26, 27, 33, 34, 35, 41, 42, 43, },
+            new int[]{26, 27, 28, 34, 35, 36, 42, 43, 44, },
+            new int[]{27, 28, 29, 35, 36, 37, 43, 44, 45, },
+            new int[]{28, 29, 30, 36, 37, 38, 44, 45, 46, },
+            new int[]{29, 30, 31, 37, 38, 39, 45, 46, 47, },
+            new int[]{30, 31, 38, 39, 46, 47, },
+            new int[]{32, 33, 40, 41, 48, 49, },
+            new int[]{32, 33, 34, 40, 41, 42, 48, 49, 50, },
+            new int[]{33, 34, 35, 41, 42, 43, 49, 50, 51, },
+            new int[]{34, 35, 36, 42, 43, 44, 50, 51, 52, },
+            new int[]{35, 36, 37, 43, 44, 45, 51, 52, 53, },
+            new int[]{36, 37, 38, 44, 45, 46, 52, 53, 54, },
+            new int[]{37, 38, 39, 45, 46, 47, 53, 54, 55, },
+            new int[]{38, 39, 46, 47, 54, 55, },
+            new int[]{40, 41, 48, 49, 56, 57, },
+            new int[]{40, 41, 42, 48, 49, 50, 56, 57, 58, },
+            new int[]{41, 42, 43, 49, 50, 51, 57, 58, 59, },
+            new int[]{42, 43, 44, 50, 51, 52, 58, 59, 60, },
+            new int[]{43, 44, 45, 51, 52, 53, 59, 60, 61, },
+            new int[]{44, 45, 46, 52, 53, 54, 60, 61, 62, },
+            new int[]{45, 46, 47, 53, 54, 55, 61, 62, 63, },
+            new int[]{46, 47, 54, 55, 62, 63, },
+    };
+    private static int[][] blackKingZones = new int[][] {
+            new int[]{0, 1, 8, 9, 16, 17, },
+            new int[]{0, 1, 2, 8, 9, 10, 16, 17, 18, },
+            new int[]{1, 2, 3, 9, 10, 11, 17, 18, 19, },
+            new int[]{2, 3, 4, 10, 11, 12, 18, 19, 20, },
+            new int[]{3, 4, 5, 11, 12, 13, 19, 20, 21, },
+            new int[]{4, 5, 6, 12, 13, 14, 20, 21, 22, },
+            new int[]{5, 6, 7, 13, 14, 15, 21, 22, 23, },
+            new int[]{6, 7, 14, 15, 22, 23, },
+            new int[]{8, 9, 16, 17, 24, 25, },
+            new int[]{8, 9, 10, 16, 17, 18, 24, 25, 26, },
+            new int[]{9, 10, 11, 17, 18, 19, 25, 26, 27, },
+            new int[]{10, 11, 12, 18, 19, 20, 26, 27, 28, },
+            new int[]{11, 12, 13, 19, 20, 21, 27, 28, 29, },
+            new int[]{12, 13, 14, 20, 21, 22, 28, 29, 30, },
+            new int[]{13, 14, 15, 21, 22, 23, 29, 30, 31, },
+            new int[]{14, 15, 22, 23, 30, 31, },
+            new int[]{16, 17, 24, 25, 32, 33, },
+            new int[]{16, 17, 18, 24, 25, 26, 32, 33, 34, },
+            new int[]{17, 18, 19, 25, 26, 27, 33, 34, 35, },
+            new int[]{18, 19, 20, 26, 27, 28, 34, 35, 36, },
+            new int[]{19, 20, 21, 27, 28, 29, 35, 36, 37, },
+            new int[]{20, 21, 22, 28, 29, 30, 36, 37, 38, },
+            new int[]{21, 22, 23, 29, 30, 31, 37, 38, 39, },
+            new int[]{22, 23, 30, 31, 38, 39, },
+            new int[]{24, 25, 32, 33, 40, 41, },
+            new int[]{24, 25, 26, 32, 33, 34, 40, 41, 42, },
+            new int[]{25, 26, 27, 33, 34, 35, 41, 42, 43, },
+            new int[]{26, 27, 28, 34, 35, 36, 42, 43, 44, },
+            new int[]{27, 28, 29, 35, 36, 37, 43, 44, 45, },
+            new int[]{28, 29, 30, 36, 37, 38, 44, 45, 46, },
+            new int[]{29, 30, 31, 37, 38, 39, 45, 46, 47, },
+            new int[]{30, 31, 38, 39, 46, 47, },
+    };
+
     private long nodeCount = 0;
 
     public MyStockfish(boolean s) {
@@ -160,6 +240,7 @@ public class MyStockfish extends ChessPlayer{
     private int evaluate(ChessBoard b, boolean white, int[] possibleMoves) {
         long[] boardd = b.getBoard();
         int multi = ((white && getSide()) || (!white && !getSide())) ? 1 : -1;
+        int[] oppPossibleMoves = b.nGetMoves(!white, -1);
 
         if (possibleMoves[0] == 2) {
             return multi * -(100000);
@@ -168,15 +249,68 @@ public class MyStockfish extends ChessPlayer{
             return 0;
         }
 
-        int eval = Long.bitCount(boardd[0]) - Long.bitCount(boardd[1]) +
+        int eval = 100 * (Long.bitCount(boardd[0]) - Long.bitCount(boardd[1]) +
                 Long.bitCount(boardd[2]) * 3 - Long.bitCount(boardd[3]) * 3 +
-                Long.bitCount(boardd[4]) * 4 - Long.bitCount(boardd[5]) * 4 +
+                Long.bitCount(boardd[4]) * 3 - Long.bitCount(boardd[5]) * 3 +
                 Long.bitCount(boardd[6]) * 5 - Long.bitCount(boardd[7]) * 5 +
-                Long.bitCount(boardd[8]) * 9 - Long.bitCount(boardd[9]) * 9;
+                Long.bitCount(boardd[8]) * 9 - Long.bitCount(boardd[9]) * 9);
 
-        eval *= 100;
+        int whiteKing = Long.numberOfLeadingZeros(boardd[white ? 10 : 11]);
+        int blackKing = Long.numberOfLeadingZeros(boardd[white ? 11 : 10]);
 
-        return (getSide() ? eval : -eval) + (possibleMoves.length);
+        int whiteSafety = 0;
+        int blackSafety = 0;
+
+        if (blackKing < 32) {
+            int curPiece = -1;
+            for (int i : (white ? possibleMoves : oppPossibleMoves)) {
+                int from = i >>> 26;
+                int to = (i << 6) >>> 26;
+                int type = (i << 9) >>> 29;
+                if (from != curPiece) {
+                    if (Arrays.binarySearch(blackKingZones[blackKing], to) > -1) {
+                        if (type == 1 || type == 2) {
+                            blackSafety += 2;
+                        }
+                        else if (type == 3) {
+                            blackSafety += 3;
+                        }
+                        else if (type == 4) {
+                            blackSafety += 5;
+                        }
+                        curPiece = from;
+                    }
+                }
+            }
+        }
+
+        if (whiteKing >= 32) {
+            int curPiece = -1;
+            for (int i : (white ? oppPossibleMoves : possibleMoves)) {
+                int from = i >>> 26;
+                int to = (i << 6) >>> 26;
+                int type = (i << 9) >>> 29;
+                if (from != curPiece) {
+                    if (Arrays.binarySearch(whiteKingZones[whiteKing - 32], to) > -1) {
+                        if (type == 1 || type == 2) {
+                            whiteSafety += 2;
+                        }
+                        else if (type == 3) {
+                            whiteSafety += 3;
+                        }
+                        else if (type == 4) {
+                            whiteSafety += 5;
+                        }
+                        curPiece = from;
+                    }
+                }
+            }
+        }
+
+        eval += safetyValues[blackSafety];
+        eval -= safetyValues[whiteSafety];
+
+        return (getSide() ? eval : -eval) + (possibleMoves.length) - (oppPossibleMoves.length);
     }
 
     private long evaluateMoves(int move) {
