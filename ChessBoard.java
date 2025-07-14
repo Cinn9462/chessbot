@@ -1780,7 +1780,7 @@ public class ChessBoard {
                         }
                     }
                 }
-                if (((states & (0x4 >>> (white ? 1 : 0))) == 0) && ((white ? 0x1L & white_rook : 0x100000000000000L & black_rook)) != 0) {
+                if (((states & (0x8 >>> (white ? 1 : 0))) == 0) && ((white ? 0x1L & white_rook : 0x100000000000000L & black_rook)) != 0) {
                     if (white) {
                         if ((all_pieces & (0x6L)) == 0) {
                             int[] locss = new int[]{1, 2};
