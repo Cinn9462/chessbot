@@ -239,14 +239,16 @@ public class MyStockfish extends ChessPlayer{
 
     private int evaluate(ChessBoard b, boolean white, int[] possibleMoves) {
         long[] boardd = b.getBoard();
-        int multi = ((white && getSide()) || (!white && !getSide())) ? 1 : -1;
         int[] oppPossibleMoves = b.nGetMoves(!white, -1);
 
         if (possibleMoves[0] == 2) {
-            return multi * -(100000);
+            return -100000;
         }
         if (possibleMoves[0] == 1) {
             return 0;
+        }
+        if (oppPossibleMoves[0] == 2) {
+            return 100000;
         }
 
         int eval = 100 * (Long.bitCount(boardd[0]) - Long.bitCount(boardd[1]) +
