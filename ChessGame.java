@@ -22,7 +22,7 @@ public class ChessGame {
         white_time = new TimeControl();
         black_time = new TimeControl();
     }
-
+        
     /**
      * Create a game with both sides given equal time. Time controls are in seconds.
      */
@@ -32,7 +32,27 @@ public class ChessGame {
         white_time = new TimeControl(time, delay, increment);
         black_time = new TimeControl(time, delay, increment);
     }
+
+    /**
+     * Create a game with both sides given equal time. Time controls are in seconds.
+     */
+    public ChessGame(ChessPlayer white, ChessPlayer black, long time) {
+        this.white = white;
+        this.black = black;
+        white_time = new TimeControl(time, 0, 0);
+        black_time = new TimeControl(time, 0, 0);
+    }
     
+    /**
+     * Create a game with both sides given unequal time. Time controls are in seconds.
+     */
+    public ChessGame(ChessPlayer white, ChessPlayer black, long white_time, long black_time) {
+        this.white = white;
+        this.black = black;
+        this.white_time = new TimeControl(white_time, 0, 0);
+        this.black_time = new TimeControl(black_time, 0, 0);
+    }
+
     /**
      * Create a game with both sides given unequal time. Time controls are in seconds.
      */
@@ -47,7 +67,7 @@ public class ChessGame {
      * @return Status of game. -1 is win/loss, 0 is stalemate, 1 is ongoing
      */
     public int move() {
-        boolean white_turn = (turn % 2 == 0);
+        boolean white_turn = getTurn();
 
         int move;
         long startTime = System.currentTimeMillis();
@@ -101,5 +121,12 @@ public class ChessGame {
     
     public TimeControl getWhiteTimeControl() {
         return white_time;
+    }
+
+    /**
+     * @return true/false. True is white's turn, false is black's turn.
+     */
+    public boolean getTurn() {
+        return (turn % 2 == 0);
     }
 }

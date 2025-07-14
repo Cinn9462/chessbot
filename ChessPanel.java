@@ -15,9 +15,12 @@ public class ChessPanel extends JPanel {
     public static int clicks;
 
     private ChessBoard board;
-    private boolean whitePerspective;
+    private ChessGame game;
     private TimeControl white_time;
     private TimeControl black_time;
+
+
+    private boolean whitePerspective;
     private float scale = 0.8f;
 
     private Map<Integer, BufferedImage> pieceImages = new HashMap<>();
@@ -29,11 +32,12 @@ public class ChessPanel extends JPanel {
      * @param white_time White time control
      * @param black_time Black time control
      */
-    public ChessPanel(ChessBoard board, boolean white, TimeControl white_time, TimeControl black_time) {
+    public ChessPanel(ChessBoard board, ChessGame game, boolean white) {
         this.board = board;
+        this.game = game;
+        this.white_time = game.getWhiteTimeControl();
+        this.black_time = game.getBlackTimeControl();
         this.whitePerspective = white;
-        this.white_time = white_time;
-        this.black_time = black_time;
         this.addMouseListener(createMouseListener());
         this.setPreferredSize(new Dimension((int) (800 * scale), (int) (800 * scale)));
         this.loadPieceImages();
@@ -88,15 +92,7 @@ public class ChessPanel extends JPanel {
         super.paint(g);
         drawBoard(g);
         drawPieces(board, g);
-
-        if (whitePerspective) {
-            drawClock(g, white_time, (int) (810 * scale), (int) (750 * scale));
-            drawClock(g, black_time, (int) (810 * scale), (int) (50 * scale));
-        } else if (!whitePerspective) {
-            drawClock(g, black_time, (int) (810 * scale), (int) (750 * scale));
-            drawClock(g, white_time, (int) (810 * scale), (int) (50 * scale));
-        }
-
+        drawClocks(g);
     }
 
     public void drawBoard(Graphics g) {
@@ -137,10 +133,48 @@ public class ChessPanel extends JPanel {
         return positions;
     }
 
-    public void drawClock(Graphics g, TimeControl clock, int x, int y) {
-        g.setColor(Color.BLACK);
+    public void drawClocks(Graphics g) {
+        String time;
+        Color clockColor;
+
         g.setFont(new Font("Segoe UI Mono", Font.PLAIN, 50));
-        String timeStr = String.format("%02d:%02d", Math.min(clock.getTime() / 60000, 99), ((clock.getTime() / 1000) % 60));
-        g.drawString(timeStr, x, y + 20);
+        
+        if (whitePerspective) {
+    
+            clockColor = game.getTurn() ? Color.BLACK : Color.GRAY;
+            g.setColor(clockColor);
+            time = String.format("%02d:%02d", Math.min(white_time.getTime() / 60000, 99), ((white_time.getTime() / 1000) % 60));
+            if (white_time.getTime() > 10e7) {
+                time = "Infinity";
+            }
+            g.drawString(time, (int) (810 * scale), (int) (775 * scale));
+
+            clockColor = !game.getTurn() ? Color.BLACK : Color.GRAY;
+            g.setColor(clockColor);
+            time = String.format("%02d:%02d", Math.min(black_time.getTime() / 60000, 99), ((black_time.getTime() / 1000) % 60));
+
+                        if (black_time.getTime() > 10e7) {
+                time = "Infinity";
+            }
+            g.drawString(time, (int) (810 * scale), (int) (75 * scale));
+
+        } else if (!whitePerspective) {
+
+            clockColor = game.getTurn() ? Color.BLACK : Color.GRAY;
+            g.setColor(clockColor);
+            time = String.format("%02d:%02d", Math.min(black_time.getTime() / 60000, 99), ((black_time.getTime() / 1000) % 60));
+            if (black_time.getTime() > 10e7) {
+                time = "Infinity";
+            }
+            g.drawString(time, (int) (810 * scale), (int) (775 * scale));
+            
+            clockColor = !game.getTurn() ? Color.BLACK : Color.GRAY;
+            g.setColor(clockColor);
+            time = String.format("%02d:%02d", Math.min(white_time.getTime() / 60000, 99), ((white_time.getTime() / 1000) % 60));
+            if (white_time.getTime() > 10e7) {
+                time = "Infinity";
+            }
+            g.drawString(time, (int) (810 * scale), (int) (75 * scale));
+        }
     }
 }

@@ -5,7 +5,7 @@ public class Main {
         ChessBoard.makeEverything();
 
         // ChessGame game = new ChessGame(new MyStockfish(true), new Human(false));
-        ChessGame game = new ChessGame(new MyStockfish(true), new MyStockfish(false));
+        ChessGame game = new ChessGame(new MyStockfish(true), new MyStockfish(false), 600, 0, 0);
         ChessObserver watching = new ChessObserver(game, true, true);
         watching.play();
     }

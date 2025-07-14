@@ -4,7 +4,7 @@ public class TimeControl {
     private long time;
     private long delay;
     private long increment;
-
+    
     /**
      * @param time Initial time (in seconds)
      * @param delay Delay (in seconds)

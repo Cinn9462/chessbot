@@ -2678,15 +2678,4 @@ public class ChessBoard {
             System.out.println(" - " +piece + " on " + from + " to " + to);
         }
     }
-
-    /**
-     * Displays current board
-     *
-     * @param white true/false. Determines which side the board is viewed
-     */
-    public void showBoard(boolean white) {
-        ChessFrame f = new ChessFrame();
-        ChessPanel p = new ChessPanel(this, white, new TimeControl(), new TimeControl());
-        f.add(p);
-    }
 }
