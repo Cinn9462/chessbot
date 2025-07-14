@@ -83,12 +83,7 @@ public class ChessGame {
         timer.start();
 
         new Thread(() -> {
-            int move;
-            if (turn == 0) {
-                move = white.findMove(board);
-            } else {
-                move = (white_turn) ? white.findMove(board, last_move) : black.findMove(board, last_move);
-            }
+            int move = (white_turn) ? white.findMove(board, last_move) : black.findMove(board, last_move);
 
             SwingUtilities.invokeLater(() -> {
                 timer.stop();

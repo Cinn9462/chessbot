@@ -1,15 +1,21 @@
 public class ChessPlayer {
     private boolean side;
 
-    public ChessPlayer(boolean s) {
-        side = s;
+    /**
+     * 
+     * @param side true/false. True is white, false is black.
+     */
+    public ChessPlayer(boolean side) {
+        this.side = side;
     }
 
-    public int findMove(ChessBoard b) {
-        return 0;
-    }
-
-    public int findMove(ChessBoard b, int lastMove) {
+    /**
+     * 
+     * @param board Curent chessboard
+     * @param lastMove Last move made (for determining en passant)
+     * @return Move generated
+     */
+    public int findMove(ChessBoard board, int lastMove) {
         return 0;
     }
 
