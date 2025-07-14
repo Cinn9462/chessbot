@@ -1,7 +1,12 @@
+import javax.swing.Timer;
+
 public class ChessObserver {
     private ChessGame game;
     private boolean watchable;
     private boolean white_perspective; // Determines which side is on the bottom. true means white pieces are on the bottom, false means black pieces are on the bottom.
+
+    private ChessPanel screen;
+    private Timer screenTimer = new Timer(1000, e -> screen.repaint());
 
     /**
      * @param game Game board
@@ -12,6 +17,7 @@ public class ChessObserver {
         this.game = game;
         this.watchable = watchable;
         this.white_perspective = perspective;
+        this.screen = new ChessPanel(game.getBoard(), game, white_perspective);
     }
 
     /**
@@ -24,15 +30,15 @@ public class ChessObserver {
 
         if (watchable) {
             ChessFrame frame = new ChessFrame();
-            ChessPanel screen = new ChessPanel(game.getBoard(), game, white_perspective);
             frame.add(screen);
 
             screen.revalidate();
+            screenTimer.start();
 
             while (game_status > 0) {
-                game_status = game.move();
                 screen.repaint();
-                
+                game_status = game.move();
+        
                 Thread.sleep(200); // Wait 200ms between each move
             }
         }
