@@ -61,13 +61,17 @@ public class ChessGame {
         }
         
         long endTime = System.currentTimeMillis();
-        
-        if (white_turn && !white_time.updateClock(endTime - startTime)) {
-            winner = -1; // Black wins, white is out of time
-            return -1; // Game over
-        } else if (!black_time.updateClock(endTime - startTime)) {
+
+        if (white_turn) {
+            if (!white_time.updateClock(endTime - startTime)) {
+                winner = -1; // Black wins, white is out of time
+                return -1; // Game over
+            }
+        } else {
+            if (!black_time.updateClock(endTime - startTime)) {
             winner = 1; // White wins, black is out of time
             return -1; // Game over
+           }
         }
 
         board.move(move);
