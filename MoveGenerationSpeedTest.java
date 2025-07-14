@@ -1,4 +1,6 @@
 public class MoveGenerationSpeedTest {
+    
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         ChessBoard.makeEverything();
         ChessBoard board = new ChessBoard();
