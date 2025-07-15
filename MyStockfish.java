@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 public class MyStockfish extends ChessPlayer{
-    private static int dep = 6;
+    private static int dep = 4;
 
     private static int safetyValues[] = {
             1, 2, 3, 4, 5, 6, 8, 9, 10, 12,
@@ -198,7 +198,7 @@ public class MyStockfish extends ChessPlayer{
 
         int[] moveList = b.nGetMoves(white, croist);
         if (depth == 0 || moveList[0] == 1 || moveList[0] == 2) {
-            return (dep % 2 == 0 ? 1 : -1) * ((long) evaluate(b, white, moveList, depth)) & 0x00000000ffffffffL;
+            return ((long) (-2 * (dep % 2) + 1) * (evaluate(b, white, moveList, depth))) & 0x00000000ffffffffL;
         }
 
         long[] toBeRead = new long[moveList.length];
@@ -244,13 +244,13 @@ public class MyStockfish extends ChessPlayer{
         int[] oppPossibleMoves = b.nGetMoves(!white, -1);
 
         if (possibleMoves[0] == 2) {
-            return (getSide() == white ? -1 : 1) * -100000 * (depth + 1);
+            return 100000 * (depth + 1);
         }
         if (possibleMoves[0] == 1) {
             return 0;
         }
         if (oppPossibleMoves[0] == 2) {
-            return (getSide() == white ? -1 : 1) * 100000 * (depth + 1);
+            return -100000 * (depth + 1);
         }
 
         int eval = 100 * (Long.bitCount(boardd[0]) - Long.bitCount(boardd[1]) +
