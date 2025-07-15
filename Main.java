@@ -4,8 +4,8 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         ChessBoard.makeEverything();
 
-        ChessGame game = new ChessGame(new Human(true), new Human(false), 600);
-        // ChessGame game = new ChessGame(new MyStockfish(true), new MyStockfish(false), 600);
+        // ChessGame game = new ChessGame(new MyStockfish(true), new Human(false));
+        ChessGame game = new ChessGame(new Human(true), new Human(false));
         ChessObserver watching = new ChessObserver(game, true, true);
         watching.play();
     }

@@ -143,16 +143,19 @@ public class Human extends ChessPlayer {
                     int p = 0;
                     int e = 0;
                     int c = otherType;
-                    if (croist > -1) {
-                        if (f - to == 1 || f - to == -1) {
-                            if (getSide()) {
-                                if (to - t == 8) {
-                                    e = 1;
-                                }
-                            }
-                            else {
-                                if (t - to == 8) {
-                                    e = 1;
+                    if (ty == 0) {
+                        if (croist > -1) {
+                            if (f - to == 1 || f - to == -1) {
+                                if (getSide()) {
+                                    if (to - t == 8) {
+                                        e = 1;
+                                        c = 0;
+                                    }
+                                } else {
+                                    if (t - to == 8) {
+                                        e = 1;
+                                        c = 0;
+                                    }
                                 }
                             }
                         }
