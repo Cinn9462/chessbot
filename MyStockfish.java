@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 public class MyStockfish extends ChessPlayer{
-    private static int dep = 4;
+    private static int dep = 6;
 
     private static int safetyValues[] = {
             1, 2, 3, 4, 5, 6, 8, 9, 10, 12,
@@ -203,7 +203,7 @@ public class MyStockfish extends ChessPlayer{
 
         long[] toBeRead = new long[moveList.length];
         for (int i = 0; i < moveList.length; i++) {
-            toBeRead[i] = evaluateMoves(moveList[i]) | (((long) moveList[i]) & 0x00000000ffffffffL);
+            toBeRead[i] = evaluateMoves(moveList[i], (lastMove << 20) >>> 29) | (((long) moveList[i]) & 0x00000000ffffffffL);
         }
         Arrays.sort(toBeRead); // sorted in ascending order
 
@@ -244,13 +244,13 @@ public class MyStockfish extends ChessPlayer{
         int[] oppPossibleMoves = b.nGetMoves(!white, -1);
 
         if (possibleMoves[0] == 2) {
-            return 100000 * (depth + 1);
+            return -100000 * (depth + 1);
         }
         if (possibleMoves[0] == 1) {
             return 0;
         }
         if (oppPossibleMoves[0] == 2) {
-            return -100000 * (depth + 1);
+            return 100000 * (depth + 1);
         }
 
         int eval = 100 * (Long.bitCount(boardd[0]) - Long.bitCount(boardd[1]) +
@@ -317,7 +317,7 @@ public class MyStockfish extends ChessPlayer{
         return (getSide() ? eval : -eval) + (possibleMoves.length) - (oppPossibleMoves.length);
     }
 
-    private long evaluateMoves(int move) {
+    private long evaluateMoves(int move, int capture) {
         int from = move >>> 26;
         int to = (move << 6) >>> 26;
         int piece = (move << 12) >>> 29;
@@ -327,8 +327,10 @@ public class MyStockfish extends ChessPlayer{
         int eaten_piece = (move << 20) >>> 29;
 
         long value = 0;
-        if (eaten_piece != 5) {
-            value += (100) * (eaten_piece - piece);
+        if (capture != 5) {
+            if (eaten_piece != 5) {
+                value += (long) (100) * (eaten_piece - capture);
+            }
         }
         if (promotion > 0) {
             value += (10) * promotion;
