@@ -1820,7 +1820,6 @@ public class ChessBoard {
                         int thisMove = (croissant + 16);
                         moves[index] = loc << 26 | thisMove << 20 | (1) << 16 | 1 << 12;
                         index++;
-                        System.out.println("hi");
                     }
                 }
                 else {
@@ -1828,7 +1827,6 @@ public class ChessBoard {
                         int thisMove = (croissant + 40);
                         moves[index] = loc << 26 | thisMove << 20 | 1 << 12;
                         index++;
-                        System.out.println("hi");
                     }
                 }
             }
