@@ -1,23 +1,19 @@
-import javax.management.RuntimeErrorException;
 import javax.swing.Timer;
 
 public class ChessObserver {
     private ChessGame game;
     private ChessFrame frame;
     private ChessPanel screen;
-    private boolean watchable;
    
     private Timer refreshTimer;
 
     private int gameStatus = 1; // -1 is win/loss, 0 is stalemate, 1 is ongoing
-    private boolean nextMove = true;
 
     /**
      * Constructs an unwatchable game
      */
     public ChessObserver(ChessGame game) {
         this.game = game;
-        this.watchable = false;
     }
     
     /**
@@ -32,7 +28,6 @@ public class ChessObserver {
         this.screen = new ChessPanel(game, perspective);
 
         this.refreshTimer = new Timer(500, e -> screen.repaint());
-        this.watchable = true;
 
         frame.add(screen);
         frame.setVisible(true);
@@ -44,11 +39,9 @@ public class ChessObserver {
      */
     public void play() {
         while (gameStatus > 0) {
-            if (nextMove) {
-                nextMove = false;
-                game.moveVisual(this);
-            }
-            // game.move(this);
+            
+            gameStatus = game.move();
+
             try {
                 Thread.sleep(100); // Wait 100ms between each move
             } catch (InterruptedException e) {
@@ -63,13 +56,5 @@ public class ChessObserver {
         } else {
             System.out.println("Stalemate");
         }
-    }
-
-    public void setGameStatus(int status) {
-        this.gameStatus = status;
-    }
-
-    public void nextMove() {
-        nextMove = true;
     }
 }
