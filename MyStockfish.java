@@ -91,6 +91,10 @@ public class MyStockfish extends ChessPlayer{
         super(s);
     }
 
+    public String getName() {
+        return "MyStockfish";
+    }
+
     public int findMove(ChessBoard b, int lastMove) {
 
         ChessBoard bord = new ChessBoard(b);
