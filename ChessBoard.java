@@ -400,7 +400,7 @@ public class ChessBoard {
     };
     // 0 -> 7
 
-    public static void makeEverything() {
+    static {
         for (int i = 0; i < 64; i++) {
             int x = i % 8;
             int y = i / 8;

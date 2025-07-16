@@ -5,14 +5,14 @@ public class ChessGame {
     private ChessPlayer white;
     private ChessPlayer black;
 
-    private TimeControl white_time;
-    private TimeControl black_time;
+    private TimeControl whiteTime;
+    private TimeControl blackTime;
 
-    private int last_move = 100;
+    private int lastMove = 100;
 
     private int turn = 0; // even is white, odd is black
 
-    private int game_status = 0; // -1 is win/los, 0 is stalemate, 1 is ongoing
+    private int gameStatus = 0; // -1 is win/los, 0 is stalemate, 1 is ongoing
     private int winner = 0;
     
     private ChessBoard board = new ChessBoard();
@@ -25,8 +25,8 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black) {
         this.white = white;
         this.black = black;
-        white_time = new TimeControl();
-        black_time = new TimeControl();
+        whiteTime = new TimeControl();
+        blackTime = new TimeControl();
     }
         
     /**
@@ -35,8 +35,8 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black, long time, long delay, long increment) {
         this.white = white;
         this.black = black;
-        white_time = new TimeControl(time, delay, increment);
-        black_time = new TimeControl(time, delay, increment);
+        whiteTime = new TimeControl(time, delay, increment);
+        blackTime = new TimeControl(time, delay, increment);
     }
 
     /**
@@ -45,8 +45,8 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black, long time) {
         this.white = white;
         this.black = black;
-        white_time = new TimeControl(time, 0, 0);
-        black_time = new TimeControl(time, 0, 0);
+        whiteTime = new TimeControl(time, 0, 0);
+        blackTime = new TimeControl(time, 0, 0);
     }
     
     /**
@@ -55,8 +55,8 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black, long white_time, long black_time) {
         this.white = white;
         this.black = black;
-        this.white_time = new TimeControl(white_time, 0, 0);
-        this.black_time = new TimeControl(black_time, 0, 0);
+        this.whiteTime = new TimeControl(white_time, 0, 0);
+        this.blackTime = new TimeControl(black_time, 0, 0);
     }
 
     /**
@@ -65,16 +65,42 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black, long white_time, long white_delay, long white_increment, long black_time, long black_delay, long black_increment) {
         this.white = white;
         this.black = black;
-        this.white_time = new TimeControl(white_time, white_delay, white_increment);
-        this.black_time = new TimeControl(black_time, black_delay, black_increment);
+        this.whiteTime = new TimeControl(white_time, white_delay, white_increment);
+        this.blackTime = new TimeControl(black_time, black_delay, black_increment);
     }
 
-    /**
-     * @return Status of game. -1 is win/loss, 0 is stalemate, 1 is ongoing
-     */
     public void move(ChessObserver obs) {
+        boolean whiteTurn = getTurn();
+        TimeControl currentTimeControl = (whiteTurn) ? whiteTime: blackTime;
+
+        long startTime = System.currentTimeMillis();
+        currentTimeControl.resetDelay();
+
+        int move = (whiteTurn) ? white.findMove(board, lastMove) : black.findMove(board, lastMove);
+
+        board.move(move);
+        
+        turn++;
+        lastMove = move;
+
+        gameStatus = board.gameState(move); // checks if last move made resulted in checkmate
+        winner = gameStatus * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
+        
+        currentTimeControl.updateClock(System.currentTimeMillis() - startTime);
+
+        if (currentTimeControl.getTime() == 0) {
+            gameStatus = -1;
+            winner = whiteTurn ? -1 : 1;
+        }
+
+        currentTimeControl.inc();
+
+        obs.setGameStatus(gameStatus);
+    }
+
+    public void moveVisual(ChessObserver obs) {
         boolean white_turn = getTurn();
-        TimeControl currentTimeControl = (white_turn) ? white_time: black_time;
+        TimeControl currentTimeControl = (white_turn) ? whiteTime: blackTime;
 
         timer =  new Timer(50, e -> {
             currentTimeControl.updateClock(50);
@@ -83,23 +109,23 @@ public class ChessGame {
         timer.start();
 
         new Thread(() -> {
-            int move = (white_turn) ? white.findMove(board, last_move) : black.findMove(board, last_move);
+            int move = (white_turn) ? white.findMove(board, lastMove) : black.findMove(board, lastMove);
 
             SwingUtilities.invokeLater(() -> {
                 timer.stop();
                 board.move(move);
                 turn++;
-                last_move = move;
+                lastMove = move;
 
-                game_status = board.gameState(move); // checks if last move made resulted in checkmate
-                winner = game_status * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
+                gameStatus = board.gameState(move); // checks if last move made resulted in checkmate
+                winner = gameStatus * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
                 
                 if (currentTimeControl.getTime() == 0) {
-                    game_status = -1;
+                    gameStatus = -1;
                     winner = white_turn ? -1 : 1;
                 }
 
-                obs.setGameStatus(game_status);
+                obs.setGameStatus(gameStatus);
 
                 obs.nextMove();
             });
@@ -118,11 +144,11 @@ public class ChessGame {
     }
 
     public TimeControl getBlackTimeControl() {
-        return black_time;
+        return blackTime;
     }
     
     public TimeControl getWhiteTimeControl() {
-        return white_time;
+        return whiteTime;
     }
 
     /**
@@ -130,5 +156,14 @@ public class ChessGame {
      */
     public boolean getTurn() {
         return (turn % 2 == 0);
+    }
+
+    public String getWhiteName() {
+        return white.getName();
+
+    }
+
+    public String getBlackName() {
+        return black.getName();
     }
 }

@@ -27,13 +27,12 @@ public class ChessPanel extends JPanel {
 
     /**
      * 
-     * @param board Chessboard to render
      * @param white true/false. Determines whether white is on the bottom
      * @param white_time White time control
      * @param black_time Black time control
      */
-    public ChessPanel(ChessBoard board, ChessGame game, boolean white) {
-        this.board = board;
+    public ChessPanel(ChessGame game, boolean white) {
+        this.board = game.getBoard();
         this.game = game;
         this.white_time = game.getWhiteTimeControl();
         this.black_time = game.getBlackTimeControl();

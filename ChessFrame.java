@@ -1,9 +1,24 @@
 import javax.swing.*;
 
 public class ChessFrame extends JFrame {
-    public ChessFrame() {
-        this.setVisible(true);
-        this.setSize(900, 740);
+    private String whiteName;
+    private String blackName;
+
+
+    /**
+     * @param width Default width of window (resizable)
+     * @param height Default height of window (resizable)
+     * @param whiteName String found via ChessPlayer.name()
+     * @param blackName String found via ChessPlayer.name()
+     */
+    public ChessFrame(int width, int height, String whiteName, String blackName) {
+
+        this.blackName = blackName + " (black)";
+        this.whiteName = whiteName + " (white)";
+    
+        this.setTitle(this.whiteName + " vs. " + this.blackName);
+
+        this.setSize(width, height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

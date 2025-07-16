@@ -6,6 +6,10 @@ public class Human extends ChessPlayer {
         super(s);
     }
 
+    public String getName() {
+        return "Human";
+    }
+
     public int findMove(ChessBoard b, int lastMove) {
         boolean onPiece = false;
         int[] square = new int[]{-1, -1};
