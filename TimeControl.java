@@ -47,7 +47,6 @@ public class TimeControl {
 
         if (time < 0) {
             time = 0;
-            System.out.println("Player has run out of time");
         }
     }
 

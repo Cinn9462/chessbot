@@ -110,6 +110,7 @@ public class ChessGame {
         winner = gameStatus * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
         
         if (currentTimeControl.getTime() == 0) {
+            System.out.println("Player has run out of time");
             winner = whiteTurn ? -1 : 1;
             return -1;
         }
