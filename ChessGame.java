@@ -1,4 +1,3 @@
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 public class ChessGame {
@@ -89,38 +88,10 @@ public class ChessGame {
         this.blackTime = new TimeControl(black_time, black_delay, black_increment);
     }
 
-    public void move(ChessObserver obs) {
+    public int move() {
+
         boolean whiteTurn = getTurn();
         TimeControl currentTimeControl = (whiteTurn) ? whiteTime: blackTime;
-
-        long startTime = System.currentTimeMillis();
-        currentTimeControl.resetDelay();
-
-        int move = (whiteTurn) ? white.findMove(board, lastMove) : black.findMove(board, lastMove);
-
-        board.move(move);
-        
-        turn++;
-        lastMove = move;
-
-        gameStatus = board.gameState(move); // checks if last move made resulted in checkmate
-        winner = gameStatus * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
-        
-        currentTimeControl.updateClock(System.currentTimeMillis() - startTime);
-
-        if (currentTimeControl.getTime() == 0) {
-            gameStatus = -1;
-            winner = whiteTurn ? -1 : 1;
-        }
-
-        currentTimeControl.inc();
-
-        obs.setGameStatus(gameStatus);
-    }
-
-    public void moveVisual(ChessObserver obs) {
-        boolean white_turn = getTurn();
-        TimeControl currentTimeControl = (white_turn) ? whiteTime: blackTime;
 
         timer =  new Timer(50, e -> {
             currentTimeControl.updateClock(50);
@@ -128,28 +99,22 @@ public class ChessGame {
 
         timer.start();
 
-        new Thread(() -> {
-            int move = (white_turn) ? white.findMove(board, lastMove) : black.findMove(board, lastMove);
+        int move = (whiteTurn) ? white.findMove(board, lastMove) : black.findMove(board, lastMove);
 
-            SwingUtilities.invokeLater(() -> {
-                timer.stop();
-                board.move(move);
-                turn++;
-                lastMove = move;
+        timer.stop();
+        board.move(move);
+        turn++;
+        lastMove = move;
 
-                gameStatus = board.gameState(move); // checks if last move made resulted in checkmate
-                winner = gameStatus * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
-                
-                if (currentTimeControl.getTime() == 0) {
-                    gameStatus = -1;
-                    winner = white_turn ? -1 : 1;
-                }
+        gameStatus = board.gameState(move); // checks if last move made resulted in checkmate
+        winner = gameStatus * ((turn % 2 == 0) ? 1 : -1); // if it is checkmate, the current player lost because turn is updated
+        
+        if (currentTimeControl.getTime() == 0) {
+            winner = whiteTurn ? -1 : 1;
+            return -1;
+        }
 
-                obs.setGameStatus(gameStatus);
-
-                obs.nextMove();
-            });
-        }).start();
+        return gameStatus;
     }
 
     public ChessBoard getBoard() {

@@ -6,7 +6,7 @@ public class ChessObserver {
     private ChessFrame frame;
     private ChessPanel screen;
     private boolean watchable;
-
+   
     private Timer refreshTimer;
 
     private int gameStatus = 1; // -1 is win/loss, 0 is stalemate, 1 is ongoing
@@ -19,7 +19,7 @@ public class ChessObserver {
         this.game = game;
         this.watchable = false;
     }
-
+    
     /**
      * Constructs a watchable game
      * @param width Width of screen
@@ -50,12 +50,12 @@ public class ChessObserver {
             }
             // game.move(this);
             try {
-                Thread.sleep(600); // Wait 100ms between each move
+                Thread.sleep(100); // Wait 100ms between each move
             } catch (InterruptedException e) {
 
             }
         }
-
+        
         if (game.getWinner() == -1) {
             System.out.println("Black won");
         } else if (game.getWinner() == 1) {
