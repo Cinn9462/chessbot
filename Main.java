@@ -10,5 +10,6 @@ public class Main {
         ChessGame game = new ChessGame(white, black, time);
         // ChessObserver observer = new ChessObserver(game);
         ChessObserver observer = new ChessObserver(game, 900, 740, true);
+        observer.play();
     }
 }
