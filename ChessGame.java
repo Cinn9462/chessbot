@@ -39,6 +39,10 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black, long time, long delay, long increment) {
         this.white = white;
         this.black = black;
+
+        white.setSide(true);
+        black.setSide(false);
+
         whiteTime = new TimeControl(time, delay, increment);
         blackTime = new TimeControl(time, delay, increment);
     }
@@ -49,6 +53,10 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black, long time) {
         this.white = white;
         this.black = black;
+
+        white.setSide(true);
+        black.setSide(false);
+
         whiteTime = new TimeControl(time, 0, 0);
         blackTime = new TimeControl(time, 0, 0);
     }
@@ -59,6 +67,10 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black, long white_time, long black_time) {
         this.white = white;
         this.black = black;
+
+        white.setSide(true);
+        black.setSide(false);
+
         this.whiteTime = new TimeControl(white_time, 0, 0);
         this.blackTime = new TimeControl(black_time, 0, 0);
     }
@@ -69,6 +81,10 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black, long white_time, long white_delay, long white_increment, long black_time, long black_delay, long black_increment) {
         this.white = white;
         this.black = black;
+
+        white.setSide(true);
+        black.setSide(false);
+
         this.whiteTime = new TimeControl(white_time, white_delay, white_increment);
         this.blackTime = new TimeControl(black_time, black_delay, black_increment);
     }

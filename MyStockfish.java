@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 public class MyStockfish extends ChessPlayer{
-    private static int dep = 4;
+    private static int dep = 5;
 
     private static int safetyValues[] = {
             1, 2, 3, 4, 5, 6, 8, 9, 10, 12,

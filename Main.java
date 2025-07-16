@@ -12,7 +12,7 @@ public class Main {
             // ChessObserver observer = new ChessObserver(game);
             ChessObserver observer = new ChessObserver(game, 900, 740, true);
             observer.play();
-        });
+        }).start();
         
     }
 }
