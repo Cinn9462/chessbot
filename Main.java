@@ -1,18 +1,10 @@
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) {
-        
-        ChessPlayer white = new MyStockfish();
-        ChessPlayer black = new MyStockfish();
-        int time = 600;
-        
-        new Thread(() -> {
-            ChessGame game = new ChessGame(white, black, time);
-            // ChessObserver observer = new ChessObserver(game);
-            ChessObserver observer = new ChessObserver(game, 900, 740, true);
-            observer.play();
-        }).start();
-        
+    public static void main(String[] args) throws InterruptedException {
+        // ChessGame game = new ChessGame(new MyStockfish(true), new Human(false));
+        ChessGame game = new ChessGame(new MyStockfish(), new MyStockfish());
+        ChessObserver watching = new ChessObserver(game, 1000, 1000, true);
+        watching.play();
     }
 }
