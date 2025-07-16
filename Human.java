@@ -2,8 +2,7 @@ import java.util.Scanner;
 
 public class Human extends ChessPlayer {
 
-    public Human(boolean s) {
-        super(s);
+    public Human() {
     }
 
     public String getName() {

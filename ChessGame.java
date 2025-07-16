@@ -25,6 +25,10 @@ public class ChessGame {
     public ChessGame(ChessPlayer white, ChessPlayer black) {
         this.white = white;
         this.black = black;
+
+        white.setSide(true);
+        black.setSide(false);
+
         whiteTime = new TimeControl();
         blackTime = new TimeControl();
     }

@@ -1,3 +1,4 @@
+import javax.management.RuntimeErrorException;
 import javax.swing.Timer;
 
 public class ChessObserver {
@@ -40,16 +41,19 @@ public class ChessObserver {
 
     /**
      * Prints result of game
-     * @throws InterruptedException
      */
-    public void play() throws InterruptedException {
+    public void play() {
         while (gameStatus > 0) {
             if (nextMove) {
                 nextMove = false;
                 game.moveVisual(this);
             }
             // game.move(this);
-            Thread.sleep(100); // Wait 100ms between each move
+            try {
+                Thread.sleep(100); // Wait 100ms between each move
+            } catch (InterruptedException e) {
+
+            }
         }
         
         if (game.getWinner() == -1) {

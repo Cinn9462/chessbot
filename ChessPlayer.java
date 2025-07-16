@@ -1,11 +1,7 @@
 public class ChessPlayer {
     private boolean side;
 
-    /**
-     * @param side true/false. true is white, false is black.
-     */
-    public ChessPlayer(boolean side) {
-        this.side = side;
+    public ChessPlayer() {
     }
 
     /**
@@ -23,6 +19,14 @@ public class ChessPlayer {
 
     public String getName() {
         return "Player";
+    }
+
+     /**
+     * @param side true/false. true is white, false is black.
+     */
+
+    public void setSide(boolean side) {
+        this.side = side;
     }
 
     /**

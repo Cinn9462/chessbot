@@ -87,8 +87,7 @@ public class MyStockfish extends ChessPlayer{
 
     private long nodeCount = 0;
 
-    public MyStockfish(boolean s) {
-        super(s);
+    public MyStockfish() {
     }
 
     public String getName() {
