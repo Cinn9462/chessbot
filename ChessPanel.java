@@ -143,7 +143,7 @@ public class ChessPanel extends JPanel {
             clockColor = game.getTurn() ? Color.BLACK : Color.GRAY;
             g.setColor(clockColor);
             time = String.format("%02d:%02d", Math.min(white_time.getTime() / 60000, 99), ((white_time.getTime() / 1000) % 60));
-            if (white_time.getTime() > 10e7) {
+            if (white_time.getTime() > 1e9) {
                 time = "Infinity";
             }
             g.drawString(time, (int) (810 * scale), (int) (775 * scale));
@@ -152,7 +152,7 @@ public class ChessPanel extends JPanel {
             g.setColor(clockColor);
             time = String.format("%02d:%02d", Math.min(black_time.getTime() / 60000, 99), ((black_time.getTime() / 1000) % 60));
 
-                        if (black_time.getTime() > 10e7) {
+                        if (black_time.getTime() > 1e9) {
                 time = "Infinity";
             }
             g.drawString(time, (int) (810 * scale), (int) (75 * scale));
@@ -162,7 +162,7 @@ public class ChessPanel extends JPanel {
             clockColor = game.getTurn() ? Color.BLACK : Color.GRAY;
             g.setColor(clockColor);
             time = String.format("%02d:%02d", Math.min(black_time.getTime() / 60000, 99), ((black_time.getTime() / 1000) % 60));
-            if (black_time.getTime() > 10e7) {
+            if (black_time.getTime() > 1e9) {
                 time = "Infinity";
             }
             g.drawString(time, (int) (810 * scale), (int) (775 * scale));
@@ -170,7 +170,7 @@ public class ChessPanel extends JPanel {
             clockColor = !game.getTurn() ? Color.BLACK : Color.GRAY;
             g.setColor(clockColor);
             time = String.format("%02d:%02d", Math.min(white_time.getTime() / 60000, 99), ((white_time.getTime() / 1000) % 60));
-            if (white_time.getTime() > 10e7) {
+            if (white_time.getTime() > 1e9) {
                 time = "Infinity";
             }
             g.drawString(time, (int) (810 * scale), (int) (75 * scale));
