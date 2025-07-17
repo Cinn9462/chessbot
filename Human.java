@@ -30,7 +30,8 @@ public class Human extends ChessPlayer {
             }
         }
 
-        int[] legalMoves = b.nGetMoves(getSide(), croist);
+        int[] legalMoves = new int[256];
+        b.nGetMoves(getSide(), croist, legalMoves);
 
         big:
         while (true) {

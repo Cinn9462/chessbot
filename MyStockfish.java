@@ -86,6 +86,9 @@ public class MyStockfish extends ChessPlayer{
     };
 
     private long nodeCount = 0;
+    private int[][] moveList = new int[dep + 1][256];
+    private int[] opponentMoveList = new int[256];
+    private long[][] toBeRead = new long[dep + 1][256];
 
     public MyStockfish() {
     }
@@ -106,6 +109,7 @@ public class MyStockfish extends ChessPlayer{
         return (int) (moveval >>> 32);
     }
 
+    // CODE DOES NOT WORK, I HAVE ALTERED THE MOVE LIST AND NOW THIS WILL BREAK, PLEASE DO NOT RUN THIS
     private long alphabeta(ChessBoard b, int lastMove, boolean max, int depth, boolean white, int alpha, int beta) {
         int croist = -1;
         int best = -1;
@@ -122,21 +126,21 @@ public class MyStockfish extends ChessPlayer{
                 }
             }
         }
-        int[] moveList = b.nGetMoves(white, croist);
-        if (depth == 0 || moveList[0] == 1 || moveList[0] == 2) {
-            return evaluate(b, getSide(), moveList, depth);
+        b.nGetMoves(white, croist, moveList[depth]);
+        if (depth == 0 || moveList[depth][0] == 1 || moveList[depth][0] == 2) {
+            return evaluate(b, getSide(), moveList[depth], depth);
         }
         else {
             byte thinngngn = b.getPieceStates();
             if (max) {
                 val = Integer.MIN_VALUE;
                 for (int i = moveList.length - 1; i > -1; i--) {
-                    b.move(moveList[i]);
-                    long movevalue = alphabeta(b, moveList[i], false, depth - 1, !white, alpha, beta);
-                    b.unmove(moveList[i], thinngngn);
+                    b.move(moveList[depth][i]);
+                    long movevalue = alphabeta(b, moveList[depth][i], false, depth - 1, !white, alpha, beta);
+                    b.unmove(moveList[depth][i], thinngngn);
                     if ((int) movevalue > val) {
                         val = (int) movevalue;
-                        best = moveList[i];
+                        best = moveList[depth][i];
                     }
                     if (val > beta) {
                         break;
@@ -147,12 +151,12 @@ public class MyStockfish extends ChessPlayer{
             else {
                 val = Integer.MAX_VALUE;
                 for (int i = moveList.length - 1; i > -1; i--) {
-                    b.move(moveList[i]);
-                    long movevalue = alphabeta(b, moveList[i], true, depth - 1, !white, alpha, beta);
-                    b.unmove(moveList[i], thinngngn);
+                    b.move(moveList[depth][i]);
+                    long movevalue = alphabeta(b, moveList[depth][i], true, depth - 1, !white, alpha, beta);
+                    b.unmove(moveList[depth][i], thinngngn);
                     if ((int) movevalue < val) {
                         val = (int) movevalue;
-                        best = moveList[i];
+                        best = moveList[depth][i];
                     }
                     if (alpha > val) {
                         break;
@@ -187,20 +191,27 @@ public class MyStockfish extends ChessPlayer{
 
         nodeCount++;
 
-        int[] moveList = b.nGetMoves(white, croist);
-        if (depth == 0 || moveList[0] == 1 || moveList[0] == 2) {
-            return ((long) (-2 * ((dep - depth) % 2) + 1) * (evaluate(b, white, moveList, depth))) & 0x00000000ffffffffL;
+        b.nGetMoves(white, croist, moveList[depth]);
+        if (moveList[depth][1] == 2) {
+            moveList[depth][0] = moveList[depth][1] = 0;
+            return -100000L * (depth + 1);
+        }
+        if (moveList[depth][1] == 1) {
+            moveList[depth][0] = moveList[depth][1] = 0;
+            return 0;
+        }
+        if (depth == 0) {
+            return ((long) (evaluate(b, white, moveList[depth], depth))) & 0x00000000ffffffffL;
         }
 
-        long[] toBeRead = new long[moveList.length];
-        for (int i = 0; i < moveList.length; i++) {
-            toBeRead[i] = evaluateMoves(moveList[i], (lastMove << 20) >>> 29) | (((long) moveList[i]) & 0x00000000ffffffffL);
+        for (int i = 1; i <= moveList[depth][0]; i++) {
+            toBeRead[depth][i - 1] = evaluateMoves(moveList[depth][i], (lastMove << 20) >>> 29) | (((long) moveList[depth][i]) & 0x00000000ffffffffL);
         }
-        Arrays.sort(toBeRead); // sorted in ascending order
+        Arrays.sort(toBeRead[depth]); // sorted in ascending order
 
         boolean first = true;
-        for (int i = toBeRead.length - 1; i > - 1; i--) {
-            int thisMove = (int) (toBeRead[i] & (0xffffffffL));
+        for (int i = 255; i > 255 - moveList[depth][0]; i--) {
+            int thisMove = (int) (toBeRead[depth][i] & (0xffffffffL));
             byte states = b.getPieceStates();
             b.move(thisMove);
             if (first) {
@@ -223,25 +234,35 @@ public class MyStockfish extends ChessPlayer{
             }
 
             if (val >= beta) {
+                Arrays.fill(moveList[depth], 0);
+                Arrays.fill(toBeRead[depth], 0L);
                 return beta;
             }
         }
+
+        Arrays.fill(moveList[depth], 0);
+        Arrays.fill(toBeRead[depth], 0L);
 
         return ((long) best) << 32 | (((long) val) & 0xffffffffL);
     }
 
     private int evaluate(ChessBoard b, boolean white, int[] possibleMoves, int depth) {
         long[] boardd = b.getBoard();
-        int[] oppPossibleMoves = b.nGetMoves(!white, -1);
 
-        if (possibleMoves[0] == 2) {
-            return (white ? 1 : -1) * -100000 * (depth + 1);
+        if (possibleMoves[1] == 2) {
+            Arrays.fill(possibleMoves, 0);
+            return (white == getSide() ? 1 : -1) * -100000 * (depth + 1);
         }
-        if (possibleMoves[0] == 1) {
+        if (possibleMoves[1] == 1) {
+            Arrays.fill(possibleMoves, 0);
             return 0;
         }
-        if (oppPossibleMoves[0] == 2) {
-            return (white ? 1 : -1) * 100000 * (depth + 1);
+
+        b.nGetMoves(!white, -1, opponentMoveList);
+        if (opponentMoveList[1] == 2) {
+            Arrays.fill(possibleMoves, 0);
+            opponentMoveList[0] = opponentMoveList[1] = 0;
+            return (white == getSide() ? 1 : -1) * 100000 * (depth + 1);
         }
 
         int eval = 100 * (Long.bitCount(boardd[0]) - Long.bitCount(boardd[1]) +
@@ -258,10 +279,12 @@ public class MyStockfish extends ChessPlayer{
 
         if (blackKing < 32) {
             int curPiece = -1;
-            for (int i : (white ? possibleMoves : oppPossibleMoves)) {
-                int from = i >>> 26;
-                int to = (i << 6) >>> 26;
-                int type = (i << 9) >>> 29;
+            int[] myMoveList = (white ? possibleMoves : opponentMoveList);
+            for (int i = 1; i <= myMoveList[0]; i++) {
+                int myMove = myMoveList[i];
+                int from = myMove >>> 26;
+                int to = (myMove << 6) >>> 26;
+                int type = (myMove << 9) >>> 29;
                 if (from != curPiece) {
                     if (Arrays.binarySearch(blackKingZones[blackKing], to) > -1) {
                         if (type == 1 || type == 2) {
@@ -281,10 +304,12 @@ public class MyStockfish extends ChessPlayer{
 
         if (whiteKing >= 32) {
             int curPiece = -1;
-            for (int i : (white ? oppPossibleMoves : possibleMoves)) {
-                int from = i >>> 26;
-                int to = (i << 6) >>> 26;
-                int type = (i << 9) >>> 29;
+            int[] myMoveList = (!white ? possibleMoves : opponentMoveList);
+            for (int i = 1; i <= myMoveList[0]; i++) {
+                int myMove = myMoveList[1];
+                int from = myMove >>> 26;
+                int to = (myMove << 6) >>> 26;
+                int type = (myMove << 9) >>> 29;
                 if (from != curPiece) {
                     if (Arrays.binarySearch(whiteKingZones[whiteKing - 32], to) > -1) {
                         if (type == 1 || type == 2) {
@@ -305,7 +330,13 @@ public class MyStockfish extends ChessPlayer{
         eval += safetyValues[blackSafety];
         eval -= safetyValues[whiteSafety];
 
-        return (getSide() ? eval : -eval) + (possibleMoves.length) - (oppPossibleMoves.length);
+        int size1 = possibleMoves[0];
+        int size2 = opponentMoveList[0];
+
+        Arrays.fill(possibleMoves, 0);
+        Arrays.fill(opponentMoveList, 0);
+
+        return (getSide() ? eval : -eval) + (size1) - (size2);
     }
 
     private long evaluateMoves(int move, int capture) {

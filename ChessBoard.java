@@ -1162,12 +1162,13 @@ public class ChessBoard {
             }
         }
 
-        int[] moves = nGetMoves(!(side == 1), croist);
+        int[] moves = new int[256];
+        nGetMoves(!(side == 1), croist, moves);
 
-        if (moves[0] == 1) {
+        if (moves[1] == 1) {
             return 0;
         }
-        if (moves[0] == 2) {
+        if (moves[1] == 2) {
             return -1;
         }
         if ((white_pawn | white_knight | white_bishop | white_rook | white_queen |
@@ -1200,13 +1201,17 @@ public class ChessBoard {
                 statate == states;
     }
 
-    public int[] nGetMoves(boolean white, int croissant) {
+    /**
+    Edits moves into an array with the format
+     [n, m_1, m_2, m_3, ..., mn, 0, 0, 0, ...]
+     */
+    public void nGetMoves(boolean white, int croissant, int[] moves) {
         // move format: int, from, to, type, side, en passant, promotion, capture = 23 bits;
         // type: 0 = pawn, 1 = knight, 2 = bishop, 3 = rook, 4 = queen, 5 = king
         // capture: 0 = pawn, 1 = knight, 2 = bishop, 3 = rook, 4 = queen, 5 = empty
 
         if (TMR) {
-            return new int[]{1};
+            moves[1] = 1;
         }
 
         long[] pin_rays = new long[]{
@@ -1217,7 +1222,6 @@ public class ChessBoard {
         };
 
         int index = 1;
-        int[] moves = new int[256];
 
         long pawn = white ? white_pawn : black_pawn;
         long knight = white ? white_knight : black_knight;
@@ -1787,19 +1791,19 @@ public class ChessBoard {
         int cheqs = Long.bitCount(checks);
 
         if (checks == 0) {
-            return noCheck(white, croissant, pin_rays, kingLocation, opp_pawn, opp_knight, opp_bishop, opp_rook, opp_queen, opp_king,
+            noCheck(white, croissant, pin_rays, kingLocation, opp_pawn, opp_knight, opp_bishop, opp_rook, opp_queen, opp_king,
                     pawn, knight, bishop, rook, queen, king, opp_pieces, my_pieces, all_pieces, no_pieces, king_cannot_move, moves, index);
         }
         else if (cheqs == 1) {
-            return singleCheck(white, croissant, pin_rays, checks, kingLocation, opp_pawn, opp_knight, opp_bishop, opp_rook, opp_queen,
+            singleCheck(white, croissant, pin_rays, checks, kingLocation, opp_pawn, opp_knight, opp_bishop, opp_rook, opp_queen,
                     pawn, knight, bishop, rook, queen, king, opp_pieces, my_pieces, all_pieces, no_pieces, king_cannot_move, moves, index);
         }
         else {
-            return doubleCheck(white, king, my_pieces, king_cannot_move, moves, index, opp_pawn, opp_knight, opp_bishop, opp_rook, opp_queen);
+            doubleCheck(white, king, my_pieces, king_cannot_move, moves, index, opp_pawn, opp_knight, opp_bishop, opp_rook, opp_queen);
         }
     }
 
-    private int[] noCheck(boolean white, int croissant, long[] pin_rays, int kingLocation, long opp_pawn,
+    private void noCheck(boolean white, int croissant, long[] pin_rays, int kingLocation, long opp_pawn,
                             long opp_knight, long opp_bishop, long opp_rook, long opp_queen, long opp_king, long pawn, long knight,
                             long bishop, long rook, long queen, long king, long opp_pieces, long my_pieces, long all_pieces,
                             long no_pieces, long king_cannot_move, int[] moves, int index) {
@@ -2354,10 +2358,10 @@ public class ChessBoard {
             index++;
         }
 
-        return Arrays.copyOfRange(moves, 1, index);
+        moves[0] = index - 1;
     }
 
-    private int[] singleCheck(boolean white, int croissant, long[] pin_rays, long checks, int kingLocation, long opp_pawn,
+    private void singleCheck(boolean white, int croissant, long[] pin_rays, long checks, int kingLocation, long opp_pawn,
                               long opp_knight, long opp_bishop, long opp_rook, long opp_queen, long pawn, long knight,
                               long bishop, long rook, long queen, long king, long opp_pieces, long my_pieces, long all_pieces,
                               long no_pieces, long king_cannot_move, int[] moves, int index) {
@@ -2947,10 +2951,10 @@ public class ChessBoard {
             index++;
         }
 
-        return Arrays.copyOfRange(moves, 1, index);
+        moves[0] = index - 1;
     }
 
-    private int[] doubleCheck(boolean white, long king, long my_pieces, long king_cannot_move, int[] moves, int index, long opp_pawn,
+    private void doubleCheck(boolean white, long king, long my_pieces, long king_cannot_move, int[] moves, int index, long opp_pawn,
                               long opp_knight, long opp_bishop, long opp_rook, long opp_queen) {
         while (king != 0) {
             long piece = king & -king;
@@ -2995,7 +2999,7 @@ public class ChessBoard {
             index++;
         }
 
-        return Arrays.copyOfRange(moves, 1, index);
+        moves[0] = index - 1;
     }
 
     public int[] qGetMoves(boolean white) {
@@ -3056,7 +3060,8 @@ public class ChessBoard {
             }
         }
 
-        int[] moves = nGetMoves(white, croist);
+        int[] moves = new int[256];
+        nGetMoves(white, croist, moves);
 
         String side = (white) ? "White:" : "Black:";
         System.out.println(side);

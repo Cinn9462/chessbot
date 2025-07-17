@@ -15,8 +15,9 @@ public class MoveGenerationSpeedTest {
         for (int i = 1; i < 6; i++) {
             long startTime = System.nanoTime();
 
+            int[] moves = new int[256];
             for (int n = 0; n < 1e6; n++) {
-                int[] moves = board.nGetMoves(false, 100);
+                board.nGetMoves(false, 100, moves);
             }
 
             long endTime = System.nanoTime();
