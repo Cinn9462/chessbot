@@ -306,7 +306,7 @@ public class MyStockfish extends ChessPlayer{
             int curPiece = -1;
             int[] myMoveList = (!white ? possibleMoves : opponentMoveList);
             for (int i = 1; i <= myMoveList[0]; i++) {
-                int myMove = myMoveList[1];
+                int myMove = myMoveList[i];
                 int from = myMove >>> 26;
                 int to = (myMove << 6) >>> 26;
                 int type = (myMove << 9) >>> 29;
