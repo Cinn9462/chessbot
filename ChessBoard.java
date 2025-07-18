@@ -1203,7 +1203,7 @@ public class ChessBoard {
 
     /**
     Edits moves into an array with the format
-     [n, m_1, m_2, m_3, ..., mn, 0, 0, 0, ...]
+     [n, m_1, m_2, m_3, ..., m_n, 0, 0, 0, ...]
      */
     public void nGetMoves(boolean white, int croissant, int[] moves) {
         // move format: int, from, to, type, side, en passant, promotion, capture = 23 bits;
@@ -1211,7 +1211,9 @@ public class ChessBoard {
         // capture: 0 = pawn, 1 = knight, 2 = bishop, 3 = rook, 4 = queen, 5 = empty
 
         if (TMR) {
+            moves[0] = 2;
             moves[1] = 1;
+            return;
         }
 
         long[] pin_rays = new long[]{
