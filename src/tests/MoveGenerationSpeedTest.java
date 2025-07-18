@@ -1,3 +1,5 @@
+// java -cp out tests.MoveGenerationSpeedTest
+
 package tests;
 
 import boardUI.*;
