@@ -129,6 +129,14 @@ public class ChessGame {
         return winner;
     }
 
+    public ChessPlayer getWhite() {
+        return white;
+    }
+
+    public ChessPlayer getBlack() {
+        return black;
+    }
+
     public TimeControl getBlackTimeControl() {
         return blackTime;
     }

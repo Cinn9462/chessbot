@@ -1,18 +1,15 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import javax.imageio.ImageIO;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class ChessPanel extends JPanel {
 
-    public static int[] mouseClick;
-    public static int clicks;
+    private final BlockingQueue<int[]> clicks = new LinkedBlockingDeque<>(); 
 
     private ChessBoard board;
     private ChessGame game;
@@ -52,12 +49,13 @@ public class ChessPanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 int x = e.getX() / (int) (100 * scale);
                 int y = e.getY() / (int) (100 * scale);
+                
                 if (!whitePerspective) {
                     x = 7 - x;
                     y = 7 - y;
                 }
-                mouseClick = new int[]{x, y};
-                clicks++;
+                
+                clicks.offer(new int[]{x, y});
             }
         };
     }
@@ -176,4 +174,10 @@ public class ChessPanel extends JPanel {
             g.drawString(time, (int) (810 * scale), (int) (75 * scale));
         }
     }
+
+    public int[] getNextClick() throws InterruptedException {
+        return clicks.take();
+    }
+
+
 }

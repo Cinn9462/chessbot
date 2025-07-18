@@ -35,4 +35,11 @@ public class ChessPlayer {
     public boolean getSide() {
         return side;
     }
+
+    /**
+     * Set ChessPanel for Human player
+     */
+    public void setScreen(ChessPanel screen) {
+
+    }
 }

@@ -1,6 +1,9 @@
-import java.util.Scanner;
+import javax.management.RuntimeErrorException;
+import javax.swing.JOptionPane;
 
 public class Human extends ChessPlayer {
+
+    ChessPanel screen;
 
     public Human() {
     }
@@ -9,123 +12,70 @@ public class Human extends ChessPlayer {
         return "Human";
     }
 
+    /**
+     * Add screen to human so human can recieve inputs
+     * @param screen Screen to link with Human player
+     */
+    public void setScreen(ChessPanel screen) {
+        this.screen = screen;
+    }
+
     public int findMove(ChessBoard b, int lastMove) {
-        boolean onPiece = false;
-        int[] square = new int[]{-1, -1};
-        int type = -1;
-        int otherType = 5;
-        int curClicks = ChessPanel.clicks;
-
-        int croist = -1;
-
-        int from = lastMove >>> 26;
-        int to = (lastMove << 6) >>> 26;
-        int piece = (lastMove << 12) >>> 29;
-
-        if (lastMove != 100) {
-            if (piece == 0) {
-                if (to - from == 16 || from - to == 16) {
-                    croist = to % 8;
-                }
-            }
-        }
+        int enPassantFile = (
+            lastMove != 100 && // Last move exists
+            ((lastMove << 12) >>> 29) == 0 &&  // Pawn moved
+            Math.abs(((lastMove << 6) >>> 26) - (lastMove >>> 26)) == 16)  // Move was 2 squares up
+            ? ((lastMove << 6) >>> 26) % 8 : -1; // Cut the file that the pawn moved in
 
         int[] legalMoves = new int[256];
-        b.nGetMoves(getSide(), croist, legalMoves);
+        b.nGetMoves(getSide(), enPassantFile, legalMoves);
+        
+        long[] board = b.getBoard();
+        long ourPieces = (this.getSide()) ? 
+            (board[0] | board[2] | board[4] | board[6] | board[8] | board[10]) :
+            (board [1] | board[3] | board[5] | board[7] | board[9] | board[11]);
 
-        big:
+        int from = -1;
+        int to;
+        
         while (true) {
-            if (ChessPanel.clicks > curClicks) {
-                int[] loc = ChessPanel.mouseClick;
-                if (loc[0] < 0 || loc[1] < 0) {
-                    onPiece = false;
-                    otherType = 5;
-                    continue;
-                }
-                long[] boardd = b.getBoard();
-                if (onPiece) {
-                    if (square[0] == loc[0] && square[1] == loc[1]) {
-                        onPiece = false;
-                        otherType = 5;
-                        continue;
-                    }
-                    for (int i = 0; i < boardd.length; i++) {
-                        if (((0x8000000000000000L >>> (loc[0] + loc[1] * 8)) & boardd[i]) != 0) {
-                            if ((i % 2 == 0 && getSide()) || (i % 2 == 1 && !getSide())) {
-                                square = loc;
-                                type = i / 2;
-                                otherType = 5;
-                                continue big;
-                            }
-                            otherType = i / 2;
-                        }
-                    }
-
-                    int f = square[0] + square[1] * 8;
-                    int t = loc[0] + loc[1] * 8;
-                    int ty = type;
-                    int s = getSide() ? 1 : 0;
-                    int p = 0;
-                    int e = 0;
-                    int c = otherType;
-                    if (ty == 0) {
-                        if (croist > -1) {
-                            if (f - to == 1 || f - to == -1) {
-                                if (getSide()) {
-                                    if (to - t == 8) {
-                                        e = 1;
-                                        c = 0;
-                                    }
-                                } else {
-                                    if (t - to == 8) {
-                                        e = 1;
-                                        c = 0;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (ty == 0 && (loc[1] == 7 - (7 * s))) {
-                        Scanner scan = new Scanner(System.in);
-                        String typeOfProm = scan.nextLine();
-                        if (typeOfProm.equalsIgnoreCase("knight")) {
-                            p = 1;
-                        }
-                        else if (typeOfProm.equalsIgnoreCase("bishop")) {
-                            p = 2;
-                        }
-                        else if (typeOfProm.equalsIgnoreCase("rook")) {
-                            p = 3;
-                        }
-                        else {
-                            p = 4;
-                        }
-                    }
-                    int move = f << 26 | t << 20 | ty << 17 | s << 16 | p << 13 | e << 12 | c << 9;
-                    for (int m : legalMoves) {
-                        if (move == m) {
-                            return move;
-                        }
-                    }
-                }
-                else {
-                    for (int i = 0; i < boardd.length; i++) {
-                        if (((0x8000000000000000L >>> (loc[0] + loc[1] * 8)) & boardd[i]) != 0) {
-                            if ((i % 2 == 0 && getSide()) || (i % 2 == 1 && !getSide())) {
-                                square = loc;
-                                type = i / 2;
-                                onPiece = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                curClicks++;
-            }
             try {
-                Thread.sleep(2);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                int[] click = screen.getNextClick();
+
+                if ((0x8000000000000000L >>> (click[0] + click[1] * 8) & ourPieces) != 0) { // If piece selected is player's own, it is the new from piece
+                
+                    from = click[0] + click[1] * 8;
+                
+                } else if (from != -1) { // If a piece is selected, test if the to square is a valid move
+                    
+                    to = click[0] + click[1] * 8;
+
+                    for (int move : legalMoves) {
+                        if (move >>> 20 == (from << 6 | to)) { // If there is a move in the legal list that matches the from and to
+
+                            
+                            if ((move << 16) >>> 29 != 0) { // If move is a promotion move
+
+                                String[] options = {"Knight", "Bishop", "Rook", "Queen"};
+                                int choice = JOptionPane.showOptionDialog(
+                                    null,
+                                    "Choose a piece to promote to:",
+                                    "Promotion",
+                                    JOptionPane.DEFAULT_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE,
+                                    null,
+                                    options,
+                                    options[3]
+                                );
+
+                                move = (move & ~(0b111 << 13) | (choice + 1) << 13); // Change promotion piece to user selection
+                            }
+                        return move;    
+                        }
+                    }
+                }
+            } catch (InterruptedException e){
+                throw new RuntimeErrorException(null, "Error in findMove method of Human");
             }
         }
     }
