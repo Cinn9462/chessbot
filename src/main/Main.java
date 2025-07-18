@@ -1,3 +1,12 @@
+// javac -d out (Get-ChildItem -Recurse -Filter *.java -Path src | ForEach-Object { $_.FullName }); java -cp out main.Main
+
+
+package main;
+import boardUI.*;
+import game.*;
+import player.*;
+
+@SuppressWarnings("unused")
 public class Main {
     public static void main(String[] args) {
         

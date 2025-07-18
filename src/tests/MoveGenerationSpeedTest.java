@@ -1,12 +1,18 @@
+package tests;
+
+import boardUI.*;
+import game.*;
+import player.*;
+
 /* 
  * Test the speed of the Move generation method, by running five trials of
  * a million simulations of the move generation method and printing the
  * average time in nanoseconds
  */
 
+ @SuppressWarnings("unused")
 public class MoveGenerationSpeedTest {
-    
-    @SuppressWarnings("unused")
+
     public static void main(String[] args) {
         ChessBoard board = new ChessBoard();
         
