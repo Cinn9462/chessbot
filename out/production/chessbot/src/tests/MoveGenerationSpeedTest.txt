@@ -1,0 +1,23 @@
+Initial tests
+
+7/18/2025
+Trial 1: 618.6729 nanoseconds per generation
+Trial 2: 568.8114 nanoseconds per generation
+Trial 3: 517.3832 nanoseconds per generation
+Trial 4: 519.2791 nanoseconds per generation
+Trial 5: 484.237 nanoseconds per generation
+Average time: 550.08562 nanoseconds
+
+Trial 1: 601.0544 nanoseconds per generation
+Trial 2: 647.8119 nanoseconds per generation
+Trial 3: 557.4043 nanoseconds per generation
+Trial 4: 560.1719 nanoseconds per generation
+Trial 5: 431.7754 nanoseconds per generation
+Average time: 568.9396 nanoseconds
+
+Trial 1: 567.0402 nanoseconds per generation
+Trial 2: 485.7533 nanoseconds per generation
+Trial 3: 554.8538 nanoseconds per generation
+Trial 4: 550.6868 nanoseconds per generation
+Trial 5: 528.0095 nanoseconds per generation
+Average time: 542.16292 nanoseconds
